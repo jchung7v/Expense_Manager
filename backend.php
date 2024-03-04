@@ -43,6 +43,9 @@ class ExpenseDatabase {
             ['Car Insurance', 'ICBC'],
             ['Gas Heating', 'FORTISBC'],
             ['Donations', 'RED CROSS'],
+            ['Banking', 'GATEWAY'],
+            ['Banking', 'CHQ'],
+            ['Banking', 'FEE'],
         ];
 
         foreach ($predefinedBuckets as $bucket) {
@@ -113,6 +116,7 @@ class ExpenseDatabase {
             'Donations' => 0,
             'Car Insurance' => 0,
             'Gas Heating' => 0,
+            'Banking' => 0,
             'Other' => 0 // Initialize "Other" category for unmatched transactions
         ];
     
@@ -140,8 +144,39 @@ class ExpenseDatabase {
     
         return $categoryTotals;
     }
-    
 
+    public function generateReportTable($year) {
+        $report = $this->generateReport($year);
+        $html = "<h2>Expense Report for Year: $year</h2>";
+        $html .= "<table border='1'><tr><th>Category</th><th>Amount</th></tr>";
+        $total = 0;
+        foreach ($report as $category => $amount) {
+            $html .= "<tr><td>" . htmlspecialchars($category) . "</td><td>" . number_format($amount, 2) . "</td></tr>";
+            $total += $amount;
+        }
+        $html .= "<tr><td><strong>Total</strong></td><td><strong>" . number_format($total, 2) . "</strong></td></tr>";
+        $html .= "</table>";
+        return $html;
+    }
+
+    public function generatePieChartJS($year) {
+        $report = $this->generateReport($year);
+        $js = "google.charts.load('current', {'packages':['corechart']});";
+        $js .= "google.charts.setOnLoadCallback(drawChart);";
+        $js .= "function drawChart() {";
+        $js .= "var data = google.visualization.arrayToDataTable([";
+        $js .= "['Category', 'Amount'],";
+        foreach ($report as $category => $amount) {
+            $js .= "['" . addslashes($category) . "', " . $amount . "],";
+        }
+        $js .= "]);";
+        $js .= "var options = {is3D: true,};";
+        $js .= "var chart = new google.visualization.PieChart(document.getElementById('piechart'));";
+        $js .= "chart.draw(data, options);";
+        $js .= "}";
+        return $js;
+    }
+    
 }
 
 ?>
