@@ -11,19 +11,20 @@ class ExpenseDatabase {
 
     private function initializeTables() {
         $this->db->exec("CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             date TEXT,
             vendor TEXT,
             withdraw REAL,
             deposit REAL,
             balance REAL
         )");
-
+    
         $this->db->exec("CREATE TABLE IF NOT EXISTS buckets (
             category TEXT,
             vendor TEXT,
             PRIMARY KEY (category, vendor)
         )");
-    }
+    }    
 
     private function initializePredefinedBuckets() {
         $predefinedBuckets = [
@@ -108,21 +109,17 @@ class ExpenseDatabase {
     }
 
     public function generateReport($year) {
-        // Initialize an array to hold category totals, including "Other"
-        $categoryTotals = [
-            'Entertainment' => 0,
-            'Communication' => 0,
-            'Groceries' => 0,
-            'Donations' => 0,
-            'Car Insurance' => 0,
-            'Gas Heating' => 0,
-            'Banking' => 0,
-            'Other' => 0 // Initialize "Other" category for unmatched transactions
-        ];
+        // Fetch unique categories from the buckets table
+        $categoriesResult = $this->db->query("SELECT DISTINCT category FROM buckets");
+        $categoryTotals = [];
+        while ($category = $categoriesResult->fetchArray(SQLITE3_ASSOC)) {
+            // Initialize each category total to 0
+            $categoryTotals[$category['category']] = 0;
+        }
+        // Ensure "Other" category is also initialized
+        $categoryTotals['Other'] = 0;
     
-        $stmt = $this->db->prepare("SELECT t.date, t.vendor, t.withdraw
-                                    FROM transactions t
-                                    WHERE strftime('%Y', t.date) = ?");
+        $stmt = $this->db->prepare("SELECT t.date, t.vendor, t.withdraw FROM transactions t WHERE strftime('%Y', t.date) = ?");
         $stmt->bindValue(1, $year, SQLITE3_TEXT);
         $transactions = $stmt->execute();
     
@@ -143,7 +140,7 @@ class ExpenseDatabase {
         }
     
         return $categoryTotals;
-    }
+    }    
 
     public function generateReportTable($year) {
         $report = $this->generateReport($year);
@@ -175,6 +172,75 @@ class ExpenseDatabase {
         $js .= "chart.draw(data, options);";
         $js .= "}";
         return $js;
+    }
+
+    // Add a Bucket
+    public function addBucket($category, $vendor) {
+        $stmt = $this->db->prepare("INSERT INTO buckets (category, vendor) VALUES (?, ?)");
+        $stmt->bindValue(1, $category, SQLITE3_TEXT);
+        $stmt->bindValue(2, $vendor, SQLITE3_TEXT);
+        return $stmt->execute();
+    }
+
+    public function getBucketByVendor($vendor) {
+        $stmt = $this->db->prepare("SELECT * FROM buckets WHERE vendor = ?");
+        $stmt->bindValue(1, $vendor, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        return $result->fetchArray(SQLITE3_ASSOC); // Fetches a single bucket
+    }
+    
+    // Edit a Bucket
+    // Assumes you have a unique identifier for buckets. If not, you'll need additional logic.
+    public function editBucket($category, $vendor, $oldVendor) {
+        $stmt = $this->db->prepare("UPDATE buckets SET category = ?, vendor = ? WHERE vendor = ?");
+        $stmt->bindValue(1, $category, SQLITE3_TEXT);
+        $stmt->bindValue(2, $vendor, SQLITE3_TEXT);
+        $stmt->bindValue(3, $oldVendor, SQLITE3_TEXT); // Assuming vendor is unique enough for this example
+        return $stmt->execute();
+    }
+
+    // Delete a Bucket
+    public function deleteBucket($vendor) {
+        $stmt = $this->db->prepare("DELETE FROM buckets WHERE vendor = ?");
+        $stmt->bindValue(1, $vendor, SQLITE3_TEXT);
+        return $stmt->execute();
+    }
+
+    // Add a Transaction
+    public function addTransaction($date, $vendor, $withdraw, $deposit, $balance) {
+        $stmt = $this->db->prepare("INSERT INTO transactions (date, vendor, withdraw, deposit, balance) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bindValue(1, $date, SQLITE3_TEXT);
+        $stmt->bindValue(2, $vendor, SQLITE3_TEXT);
+        $stmt->bindValue(3, $withdraw, SQLITE3_FLOAT);
+        $stmt->bindValue(4, $deposit, SQLITE3_FLOAT);
+        $stmt->bindValue(5, $balance, SQLITE3_FLOAT);
+        return $stmt->execute();
+    }
+
+    public function getTransactionById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM transactions WHERE id = ?");
+        $stmt->bindValue(1, $id, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        return $result->fetchArray(SQLITE3_ASSOC); // Fetches a single transaction
+    }
+     
+    // Update a Transaction (assuming you have a unique identifier for each transaction, like an ID)
+    public function updateTransaction($id, $date, $vendor, $withdraw, $deposit, $balance) {
+        $stmt = $this->db->prepare("UPDATE transactions SET date = ?, vendor = ?, withdraw = ?, deposit = ?, balance = ? WHERE id = ?");
+        $stmt->bindValue(1, $date, SQLITE3_TEXT);
+        $stmt->bindValue(2, $vendor, SQLITE3_TEXT);
+        $stmt->bindValue(3, $withdraw, SQLITE3_FLOAT);
+        $stmt->bindValue(4, $deposit, SQLITE3_FLOAT);
+        $stmt->bindValue(5, $balance, SQLITE3_FLOAT);
+        $stmt->bindValue(6, $id, SQLITE3_INTEGER);
+        return $stmt->execute();
+    }
+
+    // Delete a Transaction
+    public function deleteTransaction($id) {
+        $stmt = $this->db->prepare("DELETE FROM transactions WHERE id = ?");
+        $stmt->bindValue(1, $id, SQLITE3_INTEGER);
+        return $stmt->execute();
     }
     
 }
