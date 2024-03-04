@@ -1,45 +1,72 @@
 <?php
-// Connect to the SQLite database
-$database = new SQLite3('mydatabase.db');
 
-// Create the table with the necessary columns
-$createTableQuery = <<<SQL
-CREATE TABLE IF NOT EXISTS transactions (
+// Path to the CSV file
+$csvFilePath = '2023 02.csv';
+
+// Connect to SQLite database
+$db = new SQLite3('expenses.db');
+
+// Create the 'transactions' table
+$db->exec("CREATE TABLE IF NOT EXISTS transactions (
     date TEXT,
     vendor TEXT,
-    withdraw FLOAT,
-    balance FLOAT
-);
-SQL;
+    withdraw REAL,
+    deposit REAL,
+    balance REAL
+)");
 
-$database->exec($createTableQuery);
+// Create the 'buckets' table
+$db->exec("CREATE TABLE IF NOT EXISTS buckets (
+    category TEXT,
+    vendor TEXT UNIQUE
+)");
 
-// Open the CSV file
-$file = fopen('./2023 02.csv', 'r');
-
-// Skip the header row if your CSV has headers
-$headers = fgetcsv($file);
-
-// Read and insert the data into the SQLite database
-while ($row = fgetcsv($file)) {
-    // Prepare the INSERT statement with placeholders
-    $stmt = $database->prepare('INSERT INTO transactions (date, vendor, withdraw, balance) VALUES (:date, :vendor, :withdraw, :balance)');
-
-    // Bind the CSV values to the placeholders
-    $stmt->bindValue(':date', $row[0]);
-    $stmt->bindValue(':vendor', $row[1]);
-    $stmt->bindValue(':withdraw', $row[2]);
-    $stmt->bindValue(':balance', $row[3]);
-
-    // Execute the prepared statement
-    $stmt->execute();
+// Function to determine the category based on vendor name
+function getCategory($vendor) {
+    if (strpos($vendor, "RESTAURAT") !== false) return "Entertainment";
+    if (strpos($vendor, "MOBILE") !== false) return "Communication";
+    if (strpos($vendor, "SAFEWAY") !== false || strpos($vendor, "SUPERS") !== false) return "Groceries";
+    if (strpos($vendor, "RED CROSS") !== false) return "Donations";
+    if (strpos($vendor, "ICBC") !== false) return "Car Insurance";
+    if (strpos($vendor, "FORTISBC") !== false) return "Gas Heating";
+    // Add more categories as needed
+    return "Other"; // Default category if none of the above matches
 }
 
-// Close the CSV file
-fclose($file);
+// Open and read the CSV file
+if (($handle = fopen($csvFilePath, "r")) !== FALSE) {
+    fgetcsv($handle); // Skip the header row
 
-// Close the database connection
-$database->close();
+    while (($data = fgetcsv($handle)) !== FALSE) {
+        // Prepare the insert statement for 'transactions' table
+        $stmt = $db->prepare("INSERT INTO transactions (date, vendor, withdraw, deposit, balance) VALUES (?, ?, ?, ?, ?)");
+        
+        // Bind values to the prepared statement
+        $stmt->bindValue(1, $data[0], SQLITE3_TEXT);
+        $stmt->bindValue(2, trim($data[1]), SQLITE3_TEXT);
+        $stmt->bindValue(3, empty($data[2]) ? NULL : $data[2], SQLITE3_FLOAT);
+        $stmt->bindValue(4, empty($data[3]) ? NULL : $data[3], SQLITE3_FLOAT);
+        $stmt->bindValue(5, $data[4], SQLITE3_FLOAT);
 
-echo "Data import complete.";
+        // Execute the statement
+        $stmt->execute();
+
+        // Determine the category for the vendor
+        $category = getCategory(trim($data[1]));
+
+        // Prepare the insert statement for 'buckets' table
+        $stmt = $db->prepare("INSERT OR IGNORE INTO buckets (category, vendor) VALUES (?, ?)");
+        
+        // Bind values to the prepared statement
+        $stmt->bindValue(1, $category, SQLITE3_TEXT);
+        $stmt->bindValue(2, trim($data[1]), SQLITE3_TEXT);
+
+        // Execute the statement
+        $stmt->execute();
+    }
+    fclose($handle);
+}
+
+echo "CSV data imported into 'transactions' and 'buckets' tables successfully.";
+
 ?>
