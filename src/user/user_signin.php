@@ -1,9 +1,50 @@
 <?php
 session_start();
 
-if (isset($_SESSION['error_message'])) {
-    echo "<script>alert('" . $_SESSION['error_message'] . "');</script>";
-    unset($_SESSION['error_message']);
+// If user is already signed in, redirect to main page
+if(isset($_SESSION["user_signed_in"]) && $_SESSION["user_signed_in"] === true){
+    header("location: ../main.php");
+    exit;
+}
+
+if (isset($_POST['User-signin'])) {
+    // the location of other components is set by index.php, not user_signin.php
+    include("./components/utils.php");
+    include("./connect_database.php");
+
+    $userEmail = sanitize_input($_POST['Email']);
+    $userPassword = sanitize_input($_POST['Password']);
+
+    $checkStmt = $db->prepare("SELECT * FROM Users WHERE Email = ?");
+    $checkStmt->bindParam(1, $userEmail, SQLITE3_TEXT);
+    $result = $checkStmt->execute();
+
+    if ($result === false) {
+        echo "<script>alert('Error signing in'); window.location.href = '../index.php';</script>";
+        exit();
+    } else {
+        $user = $result->fetchArray(SQLITE3_ASSOC);
+        if ($user && password_verify($userPassword, $user['Password'])) {
+            if ($user['Status'] == 1) {
+                $_SESSION['user_signed_in'] = true;
+                $_SESSION['user_role'] = "user";
+                $_SESSION['user_id'] = $user['UserId'];
+                $_SESSION['user_email'] = $user['Email'];
+                $_SESSION['user_status'] = $user['Status'];
+                header('Location: ../main.php');
+                exit();
+            }
+            else {
+                echo "<script>alert('User is not authorized.'); window.location.href = '../index.php';</script>";
+                exit();
+            }
+        } else {
+            echo "<script>alert('Invalid email or password.'); window.location.href = '../index.php';</script>";
+            exit();
+        }
+    }
+
+    $db->close();
 }
 ?>
 
@@ -16,7 +57,7 @@ if (isset($_SESSION['error_message'])) {
                 <?php echo htmlspecialchars($error_message); ?>
             </div>
         <?php endif; ?>
-        <form action="./user/user_process.php" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" onsubmit="return validateForm()">
             <div class="form-group">
                 <label for="Email" class="control-label">Email</label>
                 <input for="Email" class="form-control" name="Email" id="Email" required />

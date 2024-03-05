@@ -1,9 +1,9 @@
 <?php
 include("../connect_database.php");
-
 session_start();
 
-if (isset($_GET['id']) && isset($_GET['status'])) {
+// Only admin can change user status
+if (isset($_GET['id'], $_GET['status'], $_SESSION['admin_id'])) {
     $userId = $_GET['id'];
     $newStatus = $_GET['status'];
 
@@ -13,14 +13,15 @@ if (isset($_GET['id']) && isset($_GET['status'])) {
     $result = $updateStmt->execute();
 
     if ($result) {
-        echo "User status updated successfully.";
+        echo "<script>alert('User status updated successfully.');</script>";
     } else {
-        echo "Failed to update user status.";
+        echo "<script>alert('Failed to update user status.');</script>";
     }
+} else {
+    echo "<script>alert('Invalid request.');</script>";
 }
 
 $db->close();
-
 header('Location: users_list.php');
 exit();
 ?>

@@ -1,12 +1,16 @@
 <?php
+session_start();
+
 if (isset($_POST['register'])) {
-    include("../utils.php");
+    include("../components/utils.php");
     include("../connect_database.php");
 
     // Sanitize user input to escape HTML entities and filter out dangerous characters.
     $userEmail = sanitize_input($_POST['Email']);
     $userPassword = sanitize_input($_POST['Password']);
+    $userRole = 'user';
     $userStatus = 0;
+
 
     // Hash the password
     $hashedPassword = password_hash($userPassword, PASSWORD_DEFAULT);
@@ -19,20 +23,21 @@ if (isset($_POST['register'])) {
 
     // If user ID already exists, return error message
     if ($rowCount > 0) {
-        echo 'User ID already exists';
+        echo "<script>alert('User already exists'); window.location.href = './registration.php';</script>";
     } else {
         // Insert new user into database
-        $insertStmt = $db->prepare("INSERT INTO users (Email, Password, Status) VALUES (:Email, :Password, :Status)");
+        $insertStmt = $db->prepare("INSERT INTO users (Email, Password, Role, Status) VALUES (:Email, :Password, :Role, :Status)");
         $insertStmt->bindValue(':Email', $userEmail, SQLITE3_TEXT);
-        $insertStmt->bindValue(':Password', $userPassword, SQLITE3_TEXT);
+        $insertStmt->bindValue(':Password', $hashedPassword, SQLITE3_TEXT);
+        $insertStmt->bindValue(':Role', $userRole, SQLITE3_TEXT);
         $insertStmt->bindValue(':Status', $userStatus, SQLITE3_NUM);
         $result = $insertStmt->execute();
 
         // If student was not created, return error message
         if ($result === false) {
-            echo 'Error creating new user.';
+            echo "<script>alert('Error creating new user.'); window.location.href = './registration.php';</script>";
         } else {
-            echo 'User created successfully';
+            echo "<script>alert('User created successfully'); window.location.href = '../index.php';</script>";
         }
     }
 

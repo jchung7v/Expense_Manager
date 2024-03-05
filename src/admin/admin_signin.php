@@ -2,9 +2,43 @@
 
 <?php
 session_start();
-if (isset($_SESSION['error_message'])) {
-    echo "<script>alert('" . $_SESSION['error_message'] . "');</script>";
-    unset($_SESSION['error_message']);
+
+// If the admin is already signed in, redirect to the users list page
+if(isset($_SESSION["admin_signed_in"]) && $_SESSION["admin_signed_in"] === true){
+    header("location: ./users_list.php");
+    exit;
+}
+
+if (isset($_POST['Admin-signin'])) {
+    include("../components/utils.php");
+    include("../connect_database.php");
+
+    $adminEmail = sanitize_input($_POST['Email']);
+    $adminPassword = sanitize_input($_POST['Password']);
+
+    $checkStmt = $db->prepare("SELECT * FROM Admins WHERE Email = ?");
+    $checkStmt->bindParam(1, $adminEmail, SQLITE3_TEXT);
+    $result = $checkStmt->execute();
+
+    if ($result === false) {
+        echo "<script>alert('Error signing in'); window.location.href = './admin_singin.php';</script>";
+        exit();
+    } else {
+        $admin = $result->fetchArray(SQLITE3_ASSOC);
+        if ($admin && password_verify($adminPassword, $admin['Password'])) {
+            $_SESSION['admin_signed_in'] = true;
+            $_SESSION['admin_role'] = $admin['Role'];
+            $_SESSION['admin_id'] = $admin['AdminId'];
+            $_SESSION['admin_email'] = $admin['Email'];
+            header('Location: users_list.php');
+            
+        } else {
+            echo "<script>alert('Invalid email or password'); window.location.href = './admin_singin.php';</script>";
+            exit();
+        }
+    }
+
+    $db->close();
 }
 ?>
 
@@ -17,7 +51,7 @@ if (isset($_SESSION['error_message'])) {
                 <?php echo htmlspecialchars($error_message); ?>
             </div>
         <?php endif; ?>
-        <form action="admin_process.php" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" onsubmit="return validateForm()">
             <div class="form-group">
                 <label for="Email" class="control-label">Email</label>
                 <input for="Email" class="form-control" name="Email" id="Email" required />
@@ -30,7 +64,7 @@ if (isset($_SESSION['error_message'])) {
             </div>
 
             <div class="form-group">
-                <a href="../index.php">Back to sign in page</a>
+                <a href="../index.php">Back to a user sign in page</a>
                 &nbsp;&nbsp;&nbsp;
                 <input type="submit" value="SignIn" name="Admin-signin" class="btn btn-primary" />
             </div>
