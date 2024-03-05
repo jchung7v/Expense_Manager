@@ -1,6 +1,6 @@
 <?php
-include("../connect_database.php");
 session_start();
+include("../connect_database.php");
 
 // Only admin can change user status
 if (isset($_GET['id'], $_GET['status'], $_SESSION['admin_id'])) {

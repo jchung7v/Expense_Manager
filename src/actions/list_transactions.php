@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>View Transactions</title>
-</head>
-<body>
+<?php 
+session_start();
+include("../inc_header.php");
+include("../inc_header_main.php");
+?>
+
     <h1>Transactions List</h1>
     <a href="../main.php">Back to Home</a> | <a href="add_transaction.php">Add New Transaction</a>
     <?php
@@ -30,5 +30,5 @@
         echo "No transactions found.";
     }
     ?>
-</body>
-</html>
+
+<?php include("../inc_footer.php"); ?>

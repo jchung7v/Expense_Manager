@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>View Buckets</title>
-</head>
-<body>
+<?php 
+session_start();
+include("../inc_header.php");
+include("../inc_header_main.php");
+?>
     <h1>Buckets List</h1>
     <a href="../index.php">Back to Home</a> | <a href="add_bucket.php">Add New Bucket</a>
     <?php
@@ -23,5 +22,5 @@
         echo "No buckets found.";
     }
     ?>
-</body>
-</html>
+<?php include("../inc_footer.php"); ?>
+

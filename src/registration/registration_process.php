@@ -11,7 +11,6 @@ if (isset($_POST['register'])) {
     $userRole = 'user';
     $userStatus = 0;
 
-
     // Hash the password
     $hashedPassword = password_hash($userPassword, PASSWORD_DEFAULT);
     

@@ -51,7 +51,7 @@ if (isset($_POST['User-signin'])) {
 <h1>Sign-in</h1>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-3 mx-auto">
         <?php if (!empty($error_message)): ?>
             <div class="alert alert-danger">
                 <?php echo htmlspecialchars($error_message); ?>
@@ -64,20 +64,21 @@ if (isset($_POST['User-signin'])) {
                 <div id="EmailWarning" style="color: red;"></div>            
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-2">
                 <label for="Password" class="control-label">Password</label>
                 <input for="Password" class="form-control" name="Password" id="Password" required/>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <a href="./registration/registration.php">Create new account</a>
                 &nbsp;&nbsp;&nbsp;
                 <input type="submit" value="Sign in" name="User-signin" class="btn btn-primary" />
             </div>
         </form>
-            <div>
-                <a href="./admin/admin_signin.php">Admin Sign in</a>
-            </div>
+        <hr> <!-- Visual divider -->
+        <div class="mt-2"> <!-- Margin top for spacing -->
+            <a href="./admin/admin_signin.php">Admin Sign in</a>
+        </div>
     </div>
 </div>
 

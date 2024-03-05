@@ -21,7 +21,7 @@ if (isset($_POST['Admin-signin'])) {
     $result = $checkStmt->execute();
 
     if ($result === false) {
-        echo "<script>alert('Error signing in'); window.location.href = './admin_singin.php';</script>";
+        echo "<script>alert('Error signing in'); window.location.href = '/';</script>";
         exit();
     } else {
         $admin = $result->fetchArray(SQLITE3_ASSOC);
@@ -33,7 +33,7 @@ if (isset($_POST['Admin-signin'])) {
             header('Location: users_list.php');
             
         } else {
-            echo "<script>alert('Invalid email or password'); window.location.href = './admin_singin.php';</script>";
+            echo "<script>alert('Invalid email or password'); window.location.href = '/';</script>";
             exit();
         }
     }
@@ -45,7 +45,7 @@ if (isset($_POST['Admin-signin'])) {
 <h1>Admin Sign-in</h1>
 
 <div class="row">
-    <div class="col-md-4">
+<div class="col-md-6 col-lg-3 mx-auto">
         <?php if (!empty($error_message)): ?>
             <div class="alert alert-danger">
                 <?php echo htmlspecialchars($error_message); ?>
@@ -58,15 +58,15 @@ if (isset($_POST['Admin-signin'])) {
                 <div id="EmailWarning" style="color: red;"></div>            
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-2">
                 <label for="Password" class="control-label">Password</label>
                 <input for="Password" class="form-control" name="Password" id="Password" required/>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <a href="../index.php">Back to a user sign in page</a>
                 &nbsp;&nbsp;&nbsp;
-                <input type="submit" value="SignIn" name="Admin-signin" class="btn btn-primary" />
+                <input type="submit" value="Sign in" name="Admin-signin" class="btn btn-primary" />
             </div>
         </form>
     </div>

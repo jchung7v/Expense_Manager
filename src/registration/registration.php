@@ -3,7 +3,7 @@
 <h1>New Account</h1>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-3 mx-auto">
         <?php if (!empty($error_message)): ?>
             <div class="alert alert-danger">
                 <?php echo htmlspecialchars($error_message); ?>
@@ -11,19 +11,18 @@
         <?php endif; ?>
         <form action="registration_process.php" method="post">
             <p>Enter your email and password, then click "Register"</p>
-            &nbsp;&nbsp;&nbsp;
             <div class="form-group">
                 <label for="Email" class="control-label">Email</label>
                 <input for="Email" class="form-control" name="Email" id="Email" required oninput="validateEmail()" />
                 <span id="emailWarning" style="color: red;"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-2">
                 <label for="Password" class="control-label">Password</label>
                 <input for="Password" class="form-control" name="Password" id="Password" required/>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <a href="../index.php">Back to sign in page</a>
                 &nbsp;&nbsp;&nbsp;
                 <input type="submit" value="Register" name="register" class="btn btn-primary" />

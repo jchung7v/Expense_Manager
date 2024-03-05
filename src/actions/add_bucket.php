@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Bucket</title>
-</head>
-<body>
+<?php 
+session_start();
+include("../inc_header.php");
+include("../inc_header_main.php");
+?>
     <h1>Add New Bucket</h1>
     <form action="add_bucket.php" method="post">
         <label for="category">Category:</label>
@@ -24,5 +23,5 @@
         }
     }
     ?>
-</body>
-</html>
+<?php include("../inc_footer.php"); ?>
+

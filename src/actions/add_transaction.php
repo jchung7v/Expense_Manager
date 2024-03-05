@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Transaction</title>
-</head>
-<body>
+<?php 
+session_start();
+include("../inc_header.php");
+include("../inc_header_main.php");
+?>
     <h1>Add New Transaction</h1>
     <form action="add_transaction.php" method="post">
         <label for="date">Date:</label>
@@ -37,5 +36,5 @@
         }
     }
     ?>
-</body>
-</html>
+<?php include("../inc_footer.php"); ?>
+
