@@ -16,6 +16,19 @@ if (isset($_SESSION["admin_signed_in"])) {
 echo "<a href='./components/signout.php'>Sign-out</a>";
 ?>
 
-<h1>This is the Main Page</h1>
+<h1>Expense Manager</h1>
+
+<div>
+    <a href="./actions/list_transactions.php"><button>View Transactions</button></a>
+    <a href="./actions/list_buckets.php"><button>View Buckets</button></a>
+    <a href="./actions/report.php?year=2023"><button>Report</button></a>
+</div>
+<div>
+    <form action="./actions/import_csv.php" method="post" enctype="multipart/form-data">
+        <label for="fileToUpload">Select file to upload:</label>
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <button type="submit" name="submit">Upload Selected File</button>
+    </form>
+</div>
 
 <?php include("inc_footer.php"); ?>
