@@ -66,7 +66,7 @@ class ExpenseDatabase {
                 $this->insertBucket(trim($data[1])); // This might need adjustment based on new logic.
             }
             fclose($handle);
-            echo "CSV data imported into 'transactions' and 'buckets' tables successfully.";
+            // echo "CSV data imported into 'transactions' and 'buckets' tables successfully.";
         }
     }
 
