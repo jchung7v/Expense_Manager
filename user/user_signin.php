@@ -33,7 +33,7 @@ if (isset($_POST['User-signin'])) {
                 $_SESSION['user_id'] = $user['UserId'];
                 $_SESSION['user_email'] = $user['Email'];
                 $_SESSION['user_status'] = $user['Status'];
-                header('location: ../main.php');
+                echo "<script>alert('You are signed in successfully.'); window.location.href = '../main.php';</script>";
                 exit();
             }
             else {
