@@ -1,6 +1,5 @@
 <?php
 session_start();
-include '../inc_header.php';
 
 // If the admin is already signed in, redirect to the users list page
 if(isset($_SESSION["admin_signed_in"]) && $_SESSION["admin_signed_in"] === true){
@@ -39,6 +38,7 @@ if (isset($_POST['Admin-signin'])) {
 
     $db->close();
 }
+include '../inc_header.php';
 ?>
 
 <h1>Admin Sign-in</h1>
