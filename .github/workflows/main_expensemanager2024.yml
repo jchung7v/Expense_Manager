@@ -63,4 +63,4 @@ jobs:
           app-name: 'ExpenseManager2024'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3B63036FA64D42F1A10F70160A7F88C5 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_06C527400FCF467C85E66ACAF2272417 }}
