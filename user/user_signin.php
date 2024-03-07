@@ -7,9 +7,7 @@ if(isset($_SESSION["user_signed_in"]) && $_SESSION["user_signed_in"] === true){
     exit;
 }
 
-if (isset($_GET['logout']) && $_GET['logout'] == 'success') {
-    echo "<script>alert('You are signed out successfully');</script>";
-}
+$_SESSION['message'] = 'You are signed out successfully';
 
 if (isset($_POST['User-signin'])) {
     // the location of other components is set by index.php, not user_signin.php
@@ -50,7 +48,12 @@ if (isset($_POST['User-signin'])) {
 
     $db->close();
 }
+include './inc_header.php';
 ?>
+<?php if(isset($_SESSION['message'])): ?>
+    <script>alert('<?php echo $_SESSION['message']; ?>');</script>
+    <?php unset($_SESSION['message']); ?>
+<?php endif; ?>
 
 <h1>Sign-in</h1>
 
