@@ -7,6 +7,10 @@ if(isset($_SESSION["user_signed_in"]) && $_SESSION["user_signed_in"] === true){
     exit;
 }
 
+if (isset($_GET['logout']) && $_GET['logout'] == 'success') {
+    echo "<script>alert('You are signed out successfully');</script>";
+}
+
 if (isset($_POST['User-signin'])) {
     // the location of other components is set by index.php, not user_signin.php
     include("./components/utils.php");
@@ -31,11 +35,11 @@ if (isset($_POST['User-signin'])) {
                 $_SESSION['user_id'] = $user['UserId'];
                 $_SESSION['user_email'] = $user['Email'];
                 $_SESSION['user_status'] = $user['Status'];
-                header('Location: ../main.php');
+                header('Location: ../main.php?login=success');
                 exit();
             }
             else {
-                echo "<script>alert('User is not authorized.'); window.location.href = '../index.php';</script>";
+                echo "<script>alert('The user is not authorized. If you are an administrator, please sign in through the Admin Sign-in page.'); window.location.href = '../index.php';</script>";
                 exit();
             }
         } else {

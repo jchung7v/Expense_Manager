@@ -49,6 +49,9 @@
 <body>
 
 <?php
+session_start();
+include("../inc_header.php");
+include("../inc_header_main.php");
 include '../backend.php'; // Adjust the path as necessary
 $db = new ExpenseDatabase();
 

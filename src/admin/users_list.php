@@ -32,12 +32,10 @@ $resultSet = $db->query('SELECT * FROM Users');
 
 $col0 = $resultSet->columnName(0);
 $col1 = $resultSet->columnName(1);
-$col2 = $resultSet->columnName(2);
 
 echo "<table width='100%' class='table table-striped'>\n";
 echo "<tr><th>ID</th>".
      "<th>Email</th>".
-     "<th>Hashed-Password</th>".
      "<th>Authorization</th></tr>\n";
 
 while ($row = $resultSet->fetchArray()) {
@@ -48,7 +46,6 @@ while ($row = $resultSet->fetchArray()) {
     echo "<tr>";
     echo "<td>{$row[0]}</td>";
     echo "<td>{$row[1]}</td>";
-    echo "<td>{$row[2]}</td>";
     echo "<td>";
     echo "<a class='btn btn-small $buttonClass' href='./update_user_status.php?id={$row[0]}&status=$toggleStatus'>$toggleText</a>";
     echo "</td>";

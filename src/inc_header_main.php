@@ -4,6 +4,10 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['admin_id'])) {
     exit();
 }
 
+if (isset($_GET['login']) && $_GET['login'] == 'success') {
+    echo "<script>alert('You are signed in successfully.');</script>";
+}
+
 echo "<h1>Expense Manager</h1>";
 
 if (isset($_SESSION["admin_signed_in"])) {
@@ -19,29 +23,19 @@ if (isset($_SESSION["admin_signed_in"])) {
         <li class="nav-item"><a class="nav-link" href="/actions/list_transactions.php">View Transactions</a></li>
         <li class="nav-item"><a class="nav-link" href="/actions/list_buckets.php">View Buckets</a></li>
         <li class="nav-item">
-            <a class="nav-link" href="#" onclick="document.getElementById('yearSelectionForm').style.display='block'; return false;">Report</a>
+            <!-- <a class="nav-link" href="#" onclick="document.getElementById('yearSelectionForm').style.display='block'; return false;">Report</a> -->
+            <a class="nav-link" href="/actions/report.php">Report</a>
         </li>
+        <?php if (isset($_SESSION["admin_signed_in"])) {
+            echo '<li class="nav-item"><a class="nav-link" href="/admin/users_list.php">User List</a></li>';
+        }
+        ?>
         <li class="nav-item"><a class="nav-link" href="../components/signout.php">Sign out</a></li>
     </ul>
   </div>
 </nav>
 
-<!-- Enhanced form with dark mode styling -->
-<div id="yearSelectionForm" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); background-color:#333; color: #fff; padding:20px; border-radius:10px; z-index: 1000; box-shadow: 0 0 15px rgba(0,0,0,0.5);">
-    <form action="/actions/report.php" method="GET">
-        <label for="year" style="color: #fff;">Select a year:</label>
-        <select name="year" id="year" style="color: #333; background-color: #fff; padding: 4px; border-radius: 5px; margin-right: 10px;">
-            <?php
-            $currentYear = date('Y');
-            for ($year = $currentYear; $year >= 1900; $year--) {
-                echo "<option value='$year'>$year</option>";
-            }
-            ?>
-        </select>
-        <button type="submit" style="background-color: #4CAF50; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer;">Go</button>
-        <button type="button" onclick="document.getElementById('yearSelectionForm').style.display='none';" style="background-color: #f44336; color: white; padding: 8px 16px; margin-left: 10px; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
-    </form>
-</div>
+
 
 <script>
 // Optional: Automatically show the form when the page loads, if desired
