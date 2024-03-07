@@ -33,7 +33,7 @@ if (isset($_POST['User-signin'])) {
                 $_SESSION['user_id'] = $user['UserId'];
                 $_SESSION['user_email'] = $user['Email'];
                 $_SESSION['user_status'] = $user['Status'];
-                header('Location: ../main.php?login=success');
+                header('location: ../main.php');
                 exit();
             }
             else {
