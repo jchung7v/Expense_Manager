@@ -108,3 +108,5 @@ function validateForm() {
     return validateEmail();
 }
 </script>
+
+<?php include '../inc_footer.php'; ?>
