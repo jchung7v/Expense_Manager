@@ -167,12 +167,19 @@ class ExpenseDatabase {
             $js .= "['" . addslashes($category) . "', " . $amount . "],";
         }
         $js .= "]);";
-        $js .= "var options = {is3D: true,};";
+        // Added text styling options here
+        $js .= "var options = {";
+        $js .= "is3D: true,";
+        $js .= "backgroundColor: 'transparent',";
+        $js .= "legend: {textStyle: {color: 'white'}},";
+        $js .= "titleTextStyle: {color: 'white'},";
+        $js .= "chartArea: {width: '100%', height: '80%'},";
+        $js .= "};";
         $js .= "var chart = new google.visualization.PieChart(document.getElementById('piechart'));";
         $js .= "chart.draw(data, options);";
         $js .= "}";
         return $js;
-    }
+    }    
 
     // Add a Bucket
     public function addBucket($category, $vendor) {
